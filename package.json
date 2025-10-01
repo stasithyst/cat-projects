@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc"
   },
-  "dependencies": {},
+  "dependencies": {
+    "ant-design-vue": "^4.2.6"
+  },
   "devDependencies": {
     "typescript": "^5.5.3"
   },
