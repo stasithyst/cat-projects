@@ -111,7 +111,7 @@ const buttonItemLayout = computed(() => {
 h1 {
   display: flex;
   justify-content: center;
-  color: #cf6;
+  color: #cf6098;
   font-size: 40px;
 }
 
