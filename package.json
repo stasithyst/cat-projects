@@ -8,9 +8,9 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "todo-list/node_modules/.bin/run-p type-check \"build-only {@}\" --",
-    "preview": "todo-list/node_modules/.bin/vite preview",
-    "build-only": "todo-list/node_modules/.bin/vite build",
+    "build": "vite build",
+    "preview": "vite preview",
+    "build-only": "vite build",
     "type-check": "todo-list/node_modules/.bin/vue-tsc --build",
     "lint": "todo-list/node_modules/.bin/eslint . --fix",
     "format": "todo-list/node_modules/.bin/prettier --write ../src/"
