@@ -15,5 +15,5 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-  base: process.env.NODE_ENV === 'production' ? env.VITE_BASE_URL : '/'
+  base: process.env.NODE_ENV === 'production' ? 'cat-projects' : '/'
 })
