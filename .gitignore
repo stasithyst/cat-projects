@@ -1,11 +1,30 @@
-/tmp
-/out-tsc
-
-/node_modules
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-/.pnp
-.pnp.js
+pnpm-debug.log*
+lerna-debug.log*
 
-.vscode/*
+todo-list/node_modules
+.DS_Store
+dist
+dist-ssr
+coverage
+*.local
+
+/cypress/videos/
+/cypress/screenshots/
+
+# Editor directories and files
+../.vscode/*
+!../.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+*.tsbuildinfo

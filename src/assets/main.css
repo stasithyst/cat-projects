@@ -31,6 +31,28 @@ input:focus {
   outline: none;
 }
 
+.todo-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #f3f7fe;
+  border-radius: 5px;
+  border: 2px solid #cf6098;
+}
+
+.todo-checkbox::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20' viewBox='0 -960 960 960' width='20' stroke='%23cf6098' stroke-width='20' fill='%23cf6098'%3E%3Cpath d='M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+}
+
+.todo-checkbox:checked::after {
+  width: 30px;
+  height: 30px;
+}
 
 .section-todo {
   display: flex;

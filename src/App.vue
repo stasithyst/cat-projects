@@ -15,14 +15,35 @@
           <a-input class ="todo-input" v-model:value="formState.fieldB" placeholder="input placeholder" />
         </a-form-item>
         <div class="todo-button-group">
-        <a-form-item :wrapper-col="buttonItemLayout.wrapperCol">
+        <a-form-item :wrapper-col="buttonItemLayout">
           <a-button type="primary" class="todo-item-button" @click="toDoItemAdd">Добавить</a-button>
-        </a-form-item>
-        <a-form-item :wrapper-col="buttonItemLayout.wrapperCol">
-          <a-button type="primary" class="todo-item-button" @click="resetForm">Удалить</a-button>
         </a-form-item>
         </div>
       </a-form>
+    </div>
+  </div>
+  <div class="todo-list">
+    <h2>Done tasks</h2>
+    <div class="todo" v-for="item in progressList" :key="item.name">
+      <input type="checkbox" v-model="item.isDone" class="todo-checkbox" />
+      <div class="todo-name">
+        {{ item.name }}
+      </div>
+      <div class="todo-description">
+        {{ item.description }}
+      </div>
+    </div>
+  </div>
+  <div class="todo-list">
+    <h2>Done tasks</h2>
+    <div class="todo" v-for="item in doneList" :key="item.name">
+      <input type="checkbox" v-model="item.isDone" class="todo-checkbox" />
+      <div class="todo-name">
+        {{ item.name }}
+      </div>
+      <div class="todo-description">
+        {{ item.description }}
+      </div>
     </div>
   </div>
 </template>
@@ -31,6 +52,7 @@ import { computed, reactive } from 'vue';
 import type { UnwrapRef } from 'vue';
 
 interface Todo {
+  id: number;
   name: string;
   description: string;
   isDone: boolean;
@@ -38,9 +60,11 @@ interface Todo {
 
 const toDoList = reactive<Todo[]>([])
 
+let todoId = 0
 function toDoItemAdd() {
   if(formState.fieldA && formState.fieldB) {
     toDoList.push({
+      id: todoId++,
       name: formState.fieldA,
       description: formState.fieldB,
       isDone: false,
@@ -51,10 +75,8 @@ function toDoItemAdd() {
   }
 }
 
-function resetForm() {
-  formState.fieldA = '';
-  formState.fieldB = '';
-}
+const progressList = computed(() => toDoList.filter((item) => !item.isDone))
+const doneList = computed(() => toDoList.filter((item) => item.isDone))
 
 interface FormState {
   layout: 'horizontal';
@@ -78,10 +100,6 @@ const formItemLayout = computed(() => {
 const buttonItemLayout = computed(() => {
   const { layout } = formState;
   return layout === 'horizontal'
-    ? {
-      wrapperCol: { span: 16, offset: 10 },
-    }
-    : {};
 });
 </script>
 
@@ -129,6 +147,7 @@ h1 {
 
 .todo-button-group {
   display: flex;
+  justify-content: center;
   gap: 8px;
   margin-top: auto;
   margin-bottom: 16px;
@@ -145,6 +164,15 @@ h1 {
   width: 100px;
   height: 40px;
   box-shadow: none;
+}
+
+.todo-name,
+.todo-description {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  font-weight: 700;
+  height: 50px;
 }
 
 .todo-input {
@@ -166,6 +194,29 @@ h1 {
   color: #cf6098;
   border: none;
   box-shadow: 0 3px 0 #cf6098;
+}
+
+.todo-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #f3f7fe;
+  border-radius: 5px;
+  border: 2px solid #cf6098;
+}
+
+.todo-checkbox::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20' viewBox='0 -960 960 960' width='20' stroke='%23cf6098' stroke-width='20' fill='%23cf6098'%3E%3Cpath d='M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+}
+
+.todo-checkbox:checked::after {
+  width: 30px;
+  height: 30px;
 }
 </style>
 
