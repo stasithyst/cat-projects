@@ -14,7 +14,11 @@
     >
       <template #title>
         <div class="todo-card-title">
-          <input type="checkbox" v-model="item.isDone" class="todo-checkbox" />
+          <input type="checkbox"
+                 class="todo-checkbox"
+                 :checked="item.isDone === 'true'"
+                 @click="item.isDone = item.isDone === 'true' ? 'false' : 'true'"
+          />
           <span>{{ item.name }}</span>
           <button class="todo-delete-button" @click="emit('remove', item.id)">
             <img src="@/assets/icon.svg" alt="Удалить" class="icon" />
@@ -33,7 +37,7 @@ interface Todo {
   id: number
   name: string
   description: string
-  isDone: boolean
+  isDone: 'true' | 'false' | 'joint'
 }
 
 const props = defineProps<{

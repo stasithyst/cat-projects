@@ -3,7 +3,6 @@
     class ="todo-input"
     :value="props.modelValue"
     @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
-    placeholder="Крутое описание"
   />
 </template>
 
