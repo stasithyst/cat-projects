@@ -9,10 +9,10 @@
       >
         <h1>ToDo-list</h1>
         <a-form-item class="input-label" label="Name">
-          <form-input v-model="formState.fieldA" placeholder="cool name"/>
+          <form-input v-model="formState.nameInput" placeholder="cool name"/>
         </a-form-item>
         <a-form-item class="input-label" label="Description">
-          <form-input v-model="formState.fieldB" placeholder="cool description"/>
+          <form-input v-model="formState.descriptionInput" placeholder="cool description"/>
         </a-form-item>
 
         <div class="todo-button-group">
@@ -28,27 +28,26 @@
             </a-button>
           </a-form-item>
         </div>
-        <div class="todo-all-tasks">
-          <h2>Tasks</h2>
-          <input type="text" placeholder="search tasks" v-model="input" class="todo-search" />
-          <div class="todo" v-for="item in filteredList" :key="item.id">
-              <input type="checkbox"
-                     class="todo-checkbox"
-                     :checked="item.isDone === 'true'"
-                     @click="item.isDone = item.isDone === 'true' ? 'false' : 'true'"
-              />
-              <div class="todo-name">
-                {{ item.name }}
-              </div>
-              <div class="todo-description">
-                {{ item.description }}
-              </div>
-              <button class="todo-item-button" @click="moveTask(item.id, 'false')">Progress</button>
-          </div>
-          <div class="item-error" v-if="input && !filteredList.length">
-            <p>No results found</p>
-          </div>
-        </div>
+        <input type="text" placeholder="search tasks" v-model="input" class="todo-search" />
+        <ul class="todo-list-search">
+          <li
+            v-for="item in filteredList"
+            :key="item.id"
+            class="todo-list-item"
+          >
+            <input
+              type="checkbox"
+              class="todo-checkbox"
+              v-model="item.isDone"
+              @change="() => onDropList(item.isDone ? 'selected' : 'available')"
+            />
+            <div class="todo-name">{{ item.name }}</div>
+            <div class="todo-description">{{ item.description }}</div>
+            <button class="todo-delete-button" @click="deleteCard(item.id)">
+              <img src="@/assets/icon.svg" alt="Удалить" class="icon" />
+            </button>
+          </li>
+        </ul>
       </a-form>
     </div>
   </div>
@@ -56,7 +55,7 @@
     <div class="todo-list-progress">
       <h2>Tasks in progress</h2>
       <todo-cards
-        :items="progressList"
+        :items="filter.progressList"
         type="available"
         @drag-start="onDragStart"
         @drop-list="onDropList"
@@ -66,7 +65,7 @@
     <div class="todo-list-done">
       <h2>Done tasks</h2>
       <todo-cards
-        :items="doneList"
+        :items="filter.doneList"
         type="selected"
         @drag-start="onDragStart"
         @drop-list="onDropList"
@@ -85,7 +84,7 @@ interface Todo {
   id: number
   name: string
   description: string
-  isDone: 'true' | 'false' | 'joint'
+  isDone: boolean
 }
 
 const toDoList = ref<Todo[]>([
@@ -93,21 +92,26 @@ const toDoList = ref<Todo[]>([
     id: 0,
     name: '12345',
     description: '742737',
-    isDone: 'joint',
+    isDone: false,
   },
   {
     id: 1,
     name: 'abc',
     description: '747',
-    isDone: 'joint',
+    isDone: false,
   },
   {
     id: 2,
     name: 'def',
     description: '737',
-    isDone: 'joint',
+    isDone: false,
   },
 ])
+
+const filter = computed(() => ({
+  progressList: toDoList.value.filter(t => !t.isDone),
+  doneList: toDoList.value.filter(t => t.isDone),
+}))
 
 const dragItem = ref<Todo | null>(null)
 
@@ -124,53 +128,47 @@ function onDropList(targetList: 'available' | 'selected') {
     return
   }
 
-  toDoList.value[index].isDone = targetList === 'selected' ? 'true' : 'false'
+  toDoList.value[index].isDone = targetList === 'selected'
 
   dragItem.value = null
 }
 
 let todoId = toDoList.value.length + 1
 function toDoItemAdd() {
-  if (formState.fieldA && formState.fieldB) {
+  if (formState.nameInput && formState.descriptionInput) {
     toDoList.value.push({
       id: todoId++,
-      name: formState.fieldA,
-      description: formState.fieldB,
-      isDone: 'joint',
+      name: formState.nameInput,
+      description: formState.descriptionInput,
+      isDone: false,
     })
-    formState.fieldA = ''
-    formState.fieldB = ''
+    formState.nameInput = ''
+    formState.descriptionInput = ''
   }
 }
 
 const isDisabledButtonAdd = computed(
-  () => formState.fieldA.length <= 2 || formState.fieldB.length <= 2,
+  () => formState.nameInput.length <= 2 || formState.descriptionInput.length <= 2,
 )
 
-const progressList = computed(() => toDoList.value.filter((task) => task.isDone === 'false'))
-const doneList = computed(() => toDoList.value.filter((task) => task.isDone === 'true'))
-
-function moveTask(id: number, isDone: 'true' | 'false' | 'joint') {
-  const index = toDoList.value.findIndex(item => item.id === id)
-  if (index !== -1) {
-    toDoList.value[index].isDone = isDone
-  }
-}
-
 const input = ref("");
-const filteredList = computed(() => toDoList.value.filter((t) =>
-  t.name.toLowerCase().includes(input.value.toLowerCase())))
+const filteredList = computed(() => {
+  const search = input.value.toLowerCase().trim()
+  if (!search) return []
+  return toDoList.value.filter(t => t.name.toLowerCase().includes(search) || t.description.toLowerCase().includes(search)
+  )
+})
 
 interface FormState {
   layout: 'horizontal'
-  fieldA: string
-  fieldB: string
+  nameInput: string
+  descriptionInput: string
 }
 
 const formState: UnwrapRef<FormState> = reactive({
   layout: 'horizontal',
-  fieldA: '',
-  fieldB: '',
+  nameInput: '',
+  descriptionInput: '',
 })
 
 const formItemLayout = computed(() => {
@@ -266,19 +264,43 @@ h2 {
   color: rgba(218, 157, 153, 0.51);
 }
 
-.todo {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.todo-delete-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 .todo-name,
 .todo-description {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between;
   font-weight: 700;
   height: 50px;
+}
+
+.todo-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #f4e5e5;
+  border-radius: 5px;
+  border: 2px solid #da9d99;
+  cursor: pointer;
+}
+
+.todo-checkbox::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20' viewBox='0 -960 960 960' width='20' stroke='%23DA9D99' stroke-width='20' fill='%23DA9D99'%3E%3Cpath d='M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+}
+
+.todo-checkbox:checked::after {
+  width: 30px;
+  height: 30px;
 }
 
 .todo-list {
@@ -328,28 +350,16 @@ h2 {
   opacity: 0.7;
 }
 
-.todo-checkbox {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  background: #f4e5e5;
-  border-radius: 5px;
-  border: 2px solid #da9d99;
-  cursor: pointer;
+.todo-list-search {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  padding: 0;
 }
 
-.todo-checkbox::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='20' viewBox='0 -960 960 960' width='20' stroke='%23DA9D99' stroke-width='20' fill='%23DA9D99'%3E%3Cpath d='M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
+.todo-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-
-.todo-checkbox:checked::after {
-  width: 30px;
-  height: 30px;
-}
-
 </style>

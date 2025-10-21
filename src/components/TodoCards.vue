@@ -16,8 +16,8 @@
         <div class="todo-card-title">
           <input type="checkbox"
                  class="todo-checkbox"
-                 :checked="item.isDone === 'true'"
-                 @click="item.isDone = item.isDone === 'true' ? 'false' : 'true'"
+                 :checked="item.isDone === true"
+                 @click="item.isDone = item.isDone !== true"
           />
           <span>{{ item.name }}</span>
           <button class="todo-delete-button" @click="emit('remove', item.id)">
@@ -37,7 +37,7 @@ interface Todo {
   id: number
   name: string
   description: string
-  isDone: 'true' | 'false' | 'joint'
+  isDone: boolean
 }
 
 const props = defineProps<{
