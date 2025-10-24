@@ -11,16 +11,17 @@
       style="width: 300px"
       draggable="true"
       @dragstart="() => emit('drag-start', item, props.type)"
+      @click="openCard(item.id)"
     >
       <template #title>
         <div class="todo-card-title">
           <input type="checkbox"
                  class="todo-checkbox"
                  :checked="item.isDone === true"
-                 @click="item.isDone = item.isDone !== true"
+                 @click.stop="item.isDone = item.isDone !== true"
           />
           <span>{{ item.name }}</span>
-          <button class="todo-delete-button" @click="emit('remove', item.id)">
+          <button class="todo-delete-button" @click.stop="emit('remove', item.id)">
             <img src="@/assets/icon.svg" alt="Удалить" class="icon" />
           </button>
         </div>
@@ -32,12 +33,20 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
+import { useRouter } from 'vue-router'
 
 interface Todo {
   id: number
   name: string
   description: string
   isDone: boolean
+  image: string
+}
+
+const router = useRouter()
+
+function openCard(id: number) {
+  router.push(`/card/${id}`)
 }
 
 const props = defineProps<{
@@ -56,12 +65,40 @@ const emit = defineEmits<{
 .todo-done-card-item {
   margin-bottom: 20px;
   border: 3px solid #da9d99;
+  overflow: hidden;
+  word-break: break-word;
+  cursor: pointer;
+}
+
+.todo-done-card-item:hover {
+  background-color: rgba(218, 157, 153, 0.11);
 }
 
 .todo-card-title {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.todo-card-title span {
+  flex: 1;
+  font-weight: 700;
+  color: #333;
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.3;
+  padding: 8px;
+}
+
+.todo-done-card-item p {
+  margin-top: 8px;
+  font-weight: 400;
+  color: #666;
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .todo-delete-button {
@@ -70,7 +107,14 @@ const emit = defineEmits<{
   cursor: pointer;
 }
 
+.todo-checkbox,
+.todo-delete-button {
+  flex-shrink: 0;
+}
+
 .todo-checkbox {
+  position: relative;
+  top: 0;
   appearance: none;
   width: 20px;
   height: 20px;
@@ -78,6 +122,7 @@ const emit = defineEmits<{
   border-radius: 5px;
   border: 2px solid #da9d99;
   cursor: pointer;
+  vertical-align: middle;
 }
 
 .todo-checkbox::after {
