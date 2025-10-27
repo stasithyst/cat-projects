@@ -31,7 +31,7 @@
         <div class="search-block">
           <input type="text" placeholder="search tasks" v-model="input" class="todo-search" />
           <button class="todo-filter-button" @click="isFilterOpen">
-            <img src="@/assets/search.svg" alt="Удалить" class="todo-filter-icon" />
+            <img src="@/assets/search.svg" alt="filter" class="todo-filter-icon" />
           </button>
         </div>
         <a-select
@@ -58,9 +58,8 @@
             />
             <div class="todo-name">{{ item.name }}</div>
             <div class="todo-description">{{ item.description }}</div>
-            <button class="todo-delete-button" @click="deleteCard(item.id)">
-              <img src="@/assets/icon.svg" alt="Удалить" class="icon" />
-            </button>
+
+            <router-link to="/gallery" class="other-page-button">тут коты</router-link>
           </li>
         </ul>
       </a-form>
@@ -76,6 +75,9 @@
         @drop-list="onDropList"
         @remove="deleteCard"
       />
+      <button class="other-page-button">
+        <router-link to="/gallery">тут коты</router-link>
+      </button>
     </div>
     <div class="todo-list-done">
       <h2>Done tasks</h2>
@@ -110,42 +112,42 @@ const toDoList = ref<Todo[]>([
     name: 'добавить крутые картинки',
     description: 'смешные звери уже тут',
     isDone: true,
-    image: '/images/card1.jpg'
+    image: '/images/card0.jpg'
   },
   {
     id: 1,
     name: 'купить электрическую прикольную штуку чтобы делать шашлык',
     description: 'ура шашлык!!',
     isDone: false,
-    image: '/images/card2.jpg'
+    image: '/images/card1.jpg'
   },
   {
     id: 2,
     name: 'связать шарф для пушистого кота',
     description: 'уже месяц лежит',
     isDone: false,
-    image: '/images/card3.jpg'
+    image: '/images/card2.jpg'
   },
   {
     id: 3,
     name: 'сделать тысячу заказов в золотом яблоке',
     description: 'пока только 999',
     isDone: false,
-    image: '/images/card6.jpg'
+    image: '/images/card5.jpg'
   },
   {
     id: 4,
     name: 'купить увлажнитель воздуха',
     description: 'отопление убивает',
     isDone: false,
-    image: '/images/card4.jpg'
+    image: '/images/card3.jpg'
   },
   {
     id: 5,
     name: 'пройти heavy rain',
     description: 'а что мне её зря купили что ли',
     isDone: false,
-    image: '/images/card5.jpg'
+    image: '/images/card4.jpg'
   },
 ])
 
@@ -183,7 +185,7 @@ function isFilterOpen() {
 let todoId = toDoList.value.length + 1
 function toDoItemAdd() {
   if (formState.nameInput && formState.descriptionInput) {
-    const imageIndex = ((todoId - 1) % 6) + 1
+    const imageIndex = todoId % 6
     toDoList.value.push({
       id: todoId++,
       name: formState.nameInput,
@@ -415,12 +417,6 @@ h2 {
   cursor: pointer;
 }
 
-.todo-delete-button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-}
-
 .todo-name,
 .todo-description {
   display: flex;
@@ -455,8 +451,7 @@ h2 {
   height: 30px;
 }
 
-.todo-checkbox,
-.todo-delete-button {
+.todo-checkbox {
   flex-shrink: 0;
 }
 
@@ -524,5 +519,30 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+a,
+a:hover,
+a:focus,
+a:active {
+  text-decoration: none !important;
+  color: #da9d99;
+}
+
+.other-page-button {
+  font-size: 14px;
+  font-weight: 700;
+  background-color: transparent;
+  border: 3px solid #da9d99;
+  cursor: pointer;
+  border-radius: 10px;
+  width: 300px;
+  height: 40px;
+  text-decoration: none;
+}
+.other-page-button:hover {
+  border: none;
+  box-shadow: 0 3px 0 #da9d99;
+  transition: all 0.2s;
 }
 </style>
