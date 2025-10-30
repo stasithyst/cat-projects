@@ -58,8 +58,6 @@
             />
             <div class="todo-name">{{ item.name }}</div>
             <div class="todo-description">{{ item.description }}</div>
-
-            <router-link to="/gallery" class="other-page-button">тут коты</router-link>
           </li>
         </ul>
       </a-form>
@@ -425,6 +423,7 @@ h2 {
   padding-left: 8px;
   word-break: break-word;
   white-space: normal;
+  width: 150px;
 }
 
 .todo-checkbox {
@@ -461,10 +460,6 @@ h2 {
   justify-content: center;
   margin-left: 400px;
   padding: 40px;
-}
-
-.todo-list-item > div {
-  flex: 1;
 }
 
 .todo-list-progress,
