@@ -16,17 +16,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import type { Todo } from '../types/Todo'
 
 const route = useRoute()
 const router = useRouter()
-
-interface Todo {
-  id: number
-  name: string
-  description: string
-  isDone: boolean
-  image: string
-}
 
 const item = ref<Todo | null>(null)
 

@@ -1,18 +1,13 @@
 <template>
   <div class="wrapper">
     <div class="sidebar">
-      <a-form
-        class="todo-form"
-        :layout="formState.layout"
-        :model="formState"
-        v-bind="formItemLayout"
-      >
+      <a-form class="todo-form" :model="formState" v-bind="formItemLayout">
         <h1>ToDo-list</h1>
         <a-form-item class="input-label" label="Name">
-          <form-input v-model="formState.nameInput" placeholder="cool name"/>
+          <form-input v-model="formState.nameInput" placeholder="cool name" />
         </a-form-item>
         <a-form-item class="input-label" label="Description">
-          <form-input v-model="formState.descriptionInput" placeholder="cool description"/>
+          <form-input v-model="formState.descriptionInput" placeholder="cool description" />
         </a-form-item>
 
         <div class="todo-button-group">
@@ -41,15 +36,15 @@
           placeholder="search tasks"
         >
           <a-select-option value="name" class="todo-filter-option">по названию</a-select-option>
-          <a-select-option value="description" class="todo-filter-option">по описанию</a-select-option>
-          <a-select-option value="all" class="todo-filter-option">по названию и описанию</a-select-option>
+          <a-select-option value="description" class="todo-filter-option"
+            >по описанию</a-select-option
+          >
+          <a-select-option value="all" class="todo-filter-option"
+            >по названию и описанию</a-select-option
+          >
         </a-select>
         <ul class="todo-list-search">
-          <li
-            v-for="item in filteredList"
-            :key="item.id"
-            class="todo-list-item"
-          >
+          <li v-for="item in filteredList" :key="item.id" class="todo-list-item">
             <input
               type="checkbox"
               class="todo-checkbox"
@@ -72,6 +67,7 @@
         @drag-start="onDragStart"
         @drop-list="onDropList"
         @remove="deleteCard"
+        @change="changeCheck"
       />
       <button class="other-page-button">
         <router-link to="/gallery">тут коты</router-link>
@@ -85,6 +81,7 @@
         @drag-start="onDragStart"
         @drop-list="onDropList"
         @remove="deleteCard"
+        @change="changeCheck"
       />
     </div>
   </div>
@@ -92,17 +89,10 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import type { UnwrapRef } from 'vue'
+import type { Todo } from '../types/Todo'
 import FormInput from '../components/FormInput.vue'
 import TodoCards from '../components/TodoCards.vue'
 import { watch } from 'vue'
-
-interface Todo {
-  id: number
-  name: string
-  description: string
-  isDone: boolean
-  image: string
-}
 
 const toDoList = ref<Todo[]>([
   {
@@ -182,18 +172,16 @@ function isFilterOpen() {
 
 let todoId = toDoList.value.length + 1
 function toDoItemAdd() {
-  if (formState.nameInput && formState.descriptionInput) {
-    const imageIndex = todoId % 6
-    toDoList.value.push({
-      id: todoId++,
-      name: formState.nameInput,
-      description: formState.descriptionInput,
-      isDone: false,
-      image: `/images/card${imageIndex}.jpg`
-    })
-    formState.nameInput = ''
-    formState.descriptionInput = ''
-  }
+  const imageIndex = todoId % 6
+  toDoList.value.push({
+    id: todoId++,
+    name: formState.nameInput,
+    description: formState.descriptionInput,
+    isDone: false,
+    image: `/images/card${imageIndex}.jpg`
+  })
+  formState.nameInput = ''
+  formState.descriptionInput = ''
 }
 
 const isDisabledButtonAdd = computed(
@@ -206,42 +194,41 @@ const filteredList = computed(() => {
   const search = input.value.toLowerCase().trim()
   if (!search) return []
   return toDoList.value.filter(t => {
+    const todoName = t.name.toLowerCase().includes(search)
+    const todoDescription = t.description.toLowerCase().includes(search)
     if(type.value === 'name') {
-      return t.name.toLowerCase().includes(search)
-    } else if(type.value === 'description') {
-      return t.description.toLowerCase().includes(search)
-    } else {
-      return t.name.toLowerCase().includes(search) || t.description.toLowerCase().includes(search)
+      return todoName
     }
+    if(type.value === 'description') {
+      return todoDescription
+    }
+    return todoName || todoDescription
   })
 })
 
+function changeCheck(id: number, isDone: boolean) {
+  const check = toDoList.value.find((item) => item.id === id)
+  if(check) check.isDone = isDone
+}
+
 interface FormState {
-  layout: 'horizontal'
   nameInput: string
   descriptionInput: string
 }
 
 const formState: UnwrapRef<FormState> = reactive({
-  layout: 'horizontal',
   nameInput: '',
   descriptionInput: '',
 })
 
-const formItemLayout = computed(() => {
-  const { layout } = formState
-  return layout === 'horizontal'
-    ? {
-      labelCol: { span: 6 },
-      wrapperCol: { span: 16, offset: 2 },
-    }
-    : {}
-})
+const formItemLayout = computed(() => ({
+  labelCol: { span: 6 },
+  wrapperCol: { span: 16, offset: 2 },
+}))
 
-const buttonItemLayout = computed(() => {
-  const { layout } = formState
-  return layout === 'horizontal'
-})
+const buttonItemLayout = computed(() => ({
+  wrapperCol: { offset: 4 }
+}))
 
 function deleteCard(id: number) {
   toDoList.value = toDoList.value.filter(item => item.id !== id)
@@ -314,24 +301,25 @@ h2 {
 }
 
 .todo-search {
-  font-family: "Shantell Sans", cursive;
+  font-family: 'Shantell Sans', cursive;
   font-weight: 700;
   background-color: transparent;
-  border: 3px solid #DA9D99;
+  border: 3px solid #da9d99;
   border-radius: 6px;
   width: 260px;
   height: 30px;
-  color: #DA9D99;
+  color: #da9d99;
   transition: all 0.2s;
   margin-bottom: 16px;
   padding: 4px 11px;
 }
 
-.todo-search:hover, .todo-search:focus {
+.todo-search:hover,
+.todo-search:focus {
   background-color: transparent;
-  color: #DA9D99;
+  color: #da9d99;
   border: none;
-  box-shadow: 0 3px 0 #DA9D99;
+  box-shadow: 0 3px 0 #da9d99;
   outline: none;
 }
 
@@ -348,7 +336,7 @@ h2 {
   background-color: transparent;
   border: none;
   border-radius: 50%;
-  color: #DA9D99;
+  color: #da9d99;
   cursor: pointer;
   margin-bottom: 15px;
 }
@@ -380,7 +368,7 @@ h2 {
 }
 
 .todo-filter .ant-select-arrow {
-  color: #DA9D99 !important;
+  color: #da9d99 !important;
 }
 
 .custom {
@@ -399,7 +387,7 @@ h2 {
   border-radius: 6px;
   padding: 8px;
   height: 40px;
-  color: #DA9D99 !important;
+  color: #da9d99 !important;
   outline: none;
   cursor: pointer;
 }
@@ -410,7 +398,7 @@ h2 {
   border-radius: 6px;
   padding: 8px;
   height: 40px;
-  color: #DA9D99;
+  color: #da9d99;
   outline: none;
   cursor: pointer;
 }

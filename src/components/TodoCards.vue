@@ -18,7 +18,7 @@
           <input type="checkbox"
                  class="todo-checkbox"
                  :checked="item.isDone === true"
-                 @click.stop="item.isDone = item.isDone !== true"
+                 @click.stop="emit('change', item.id, !item.isDone)"
           />
           <span>{{ item.name }}</span>
           <button class="todo-delete-button" @click.stop="emit('remove', item.id)">
@@ -34,20 +34,7 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
 import { useRouter } from 'vue-router'
-
-interface Todo {
-  id: number
-  name: string
-  description: string
-  isDone: boolean
-  image: string
-}
-
-const router = useRouter()
-
-function openCard(id: number) {
-  router.push(`/card/${id}`)
-}
+import type { Todo } from '../types/Todo'
 
 const props = defineProps<{
   items: Todo[]
@@ -58,7 +45,14 @@ const emit = defineEmits<{
   (e: 'drag-start', item: Todo, type: 'available' | 'selected'): void
   (e: 'drop-list', type: 'available' | 'selected'): void
   (e: 'remove', id: number): void
+  (e: 'change', id: number, isDone: boolean) : void
 }>()
+
+const router = useRouter()
+
+function openCard(id: number) {
+  router.push(`/card/${id}`)
+}
 </script>
 
 <style scoped>
