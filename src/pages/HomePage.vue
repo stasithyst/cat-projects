@@ -98,35 +98,35 @@ const toDoList = ref<Todo[]>([
     name: 'купить электрическую прикольную штуку чтобы делать шашлык',
     description: 'ура шашлык!!',
     isDone: false,
-    image: 'images/card1.jpg'
+    image: './images/card1.jpg'
   },
   {
     id: 2,
     name: 'связать шарф для пушистого кота',
     description: 'уже месяц лежит',
     isDone: false,
-    image: 'images/card2.jpg'
+    image: './images/card2.jpg'
   },
   {
     id: 3,
     name: 'сделать тысячу заказов в золотом яблоке',
     description: 'пока только 999',
     isDone: false,
-    image: 'images/card5.jpg'
+    image: './images/card5.jpg'
   },
   {
     id: 4,
     name: 'купить увлажнитель воздуха',
     description: 'отопление убивает',
     isDone: false,
-    image: 'images/card3.jpg'
+    image: './images/card3.jpg'
   },
   {
     id: 5,
     name: 'пройти heavy rain',
     description: 'а что мне её зря купили что ли',
     isDone: false,
-    image: 'images/card4.jpg'
+    image: './images/card4.jpg'
   },
 ])
 
