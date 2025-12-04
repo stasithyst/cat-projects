@@ -27,36 +27,36 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
 
-const visible = ref(false);
-const currentImage = ref(0);
+const visible = ref(false)
+const currentImage = ref(0)
 
 const images = [
-  { id: 0, src: 'images/gallery0.jpg' },
+  { id: 0, src: '/images/gallery0.jpg' },
   { id: 1, src: 'images/gallery1.jpg' },
   { id: 2, src: 'images/gallery2.jpg' },
   { id: 3, src: 'images/gallery3.jpg' },
   { id: 4, src: 'images/gallery4.jpg' },
   { id: 5, src: 'images/gallery5.jpg' },
-];
+]
 
 function openModal(id: number) {
-  currentImage.value = id;
-  visible.value = true;
-  router.push(`/gallery/${id}`);
+  currentImage.value = id
+  visible.value = true
+  router.push(`/gallery/${id}`)
 }
 
 function close() {
-  currentImage.value = null;
-  visible.value = false;
-  router.push('/gallery');
+  currentImage.value = null
+  visible.value = false
+  router.push('/gallery')
 }
 
 function backToHome() {
-  router.push('/');
+  router.push('/')
 }
 </script>
 
