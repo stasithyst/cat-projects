@@ -36,12 +36,12 @@ const visible = ref(false)
 const currentImage = ref<number | null>(0)
 
 const images = [
-  { id: 0, src: './images/gallery0.jpg' },
-  { id: 1, src: './images/gallery1.jpg' },
-  { id: 2, src: './images/gallery2.jpg' },
-  { id: 3, src: './images/gallery3.jpg' },
-  { id: 4, src: './images/gallery4.jpg' },
-  { id: 5, src: './images/gallery5.jpg' },
+  { id: 0, src: import.meta.env.BASE_URL + 'images/gallery0.jpg' },
+  { id: 1, src: import.meta.env.BASE_URL + 'images/gallery1.jpg' },
+  { id: 2, src: import.meta.env.BASE_URL + 'images/gallery2.jpg' },
+  { id: 3, src: import.meta.env.BASE_URL + 'images/gallery3.jpg' },
+  { id: 4, src: import.meta.env.BASE_URL + 'images/gallery4.jpg' },
+  { id: 5, src: import.meta.env.BASE_URL + 'images/gallery5.jpg' },
 ]
 
 function openModal(id: number) {
