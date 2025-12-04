@@ -24,10 +24,7 @@
           </a-form-item>
         </div>
         <div class="search-block">
-          <input type="text" placeholder="search tasks" v-model="input" class="todo-search" />
-          <button class="todo-filter-button" @click="isFilterOpen">
-            <img src="@/assets/search.svg" alt="filter" class="todo-filter-icon" />
-          </button>
+          <input type="text" placeholder="search tasks" v-model="input" class="todo-search" @click="isFilterOpen" />
         </div>
         <a-select
           v-model:value="type"
@@ -58,33 +55,27 @@
       </a-form>
     </div>
   </div>
-  <div class="todo-list">
-    <div class="todo-list-progress">
-      <h2>Tasks in progress</h2>
+  <div class="todo-list" v-for="list in lists" :key="list.type">
+    <h2>{{ list.title }}</h2>
+    <div class="todo-list-items"
+         :class="{ highlight: list.type === draggingEl }"
+         @dragover.prevent="draggingEl = list.type"
+         @dragleave="draggingEl = null">
       <todo-cards
-        :items="filter.progressList"
-        type="available"
+        :items="list.tasks"
+        :type="list.type"
         @drag-start="onDragStart"
-        @drop-list="onDropList"
-        @remove="deleteCard"
-        @change="changeCheck"
-      />
-      <button class="other-page-button">
-        <router-link to="/gallery">тут коты</router-link>
-      </button>
-    </div>
-    <div class="todo-list-done">
-      <h2>Done tasks</h2>
-      <todo-cards
-        :items="filter.doneList"
-        type="selected"
-        @drag-start="onDragStart"
+        @drag-enter="draggingEl = $event"
+        @drag-leave="draggingEl = null"
         @drop-list="onDropList"
         @remove="deleteCard"
         @change="changeCheck"
       />
     </div>
   </div>
+  <button class="other-page-button">
+    <router-link to="/gallery">тут коты</router-link>
+  </button>
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref } from 'vue'
@@ -100,53 +91,62 @@ const toDoList = ref<Todo[]>([
     name: 'добавить крутые картинки',
     description: 'смешные звери уже тут',
     isDone: true,
-    image: '/images/card0.jpg'
+    image: 'images/card0.jpg'
   },
   {
     id: 1,
     name: 'купить электрическую прикольную штуку чтобы делать шашлык',
     description: 'ура шашлык!!',
     isDone: false,
-    image: '/images/card1.jpg'
+    image: 'images/card1.jpg'
   },
   {
     id: 2,
     name: 'связать шарф для пушистого кота',
     description: 'уже месяц лежит',
     isDone: false,
-    image: '/images/card2.jpg'
+    image: 'images/card2.jpg'
   },
   {
     id: 3,
     name: 'сделать тысячу заказов в золотом яблоке',
     description: 'пока только 999',
     isDone: false,
-    image: '/images/card5.jpg'
+    image: 'images/card5.jpg'
   },
   {
     id: 4,
     name: 'купить увлажнитель воздуха',
     description: 'отопление убивает',
     isDone: false,
-    image: '/images/card3.jpg'
+    image: 'images/card3.jpg'
   },
   {
     id: 5,
     name: 'пройти heavy rain',
     description: 'а что мне её зря купили что ли',
     isDone: false,
-    image: '/images/card4.jpg'
+    image: 'images/card4.jpg'
   },
 ])
 
-const filter = computed(() => ({
-  progressList: toDoList.value.filter(t => !t.isDone),
-  doneList: toDoList.value.filter(t => t.isDone),
-}))
+const lists = computed(() => [
+  {
+    title: 'Tasks in progress',
+    type: 'available',
+    tasks: toDoList.value.filter(t => !t.isDone),
+  },
+  {
+    title: 'Done tasks',
+    type: 'selected',
+    tasks: toDoList.value.filter(t => t.isDone),
+  },
+] as const)
 
 const open = ref(false)
 
 const dragItem = ref<Todo | null>(null)
+const draggingEl = ref<'available' | 'selected' | 'null'>(null)
 
 function onDragStart(item: Todo) {
   dragItem.value = item
@@ -158,16 +158,20 @@ function onDropList(targetList: 'available' | 'selected') {
   const index = toDoList.value.findIndex((t) => t.id === dragItem.value!.id)
   if (index === -1) {
     dragItem.value = null
+    draggingEl.value = null
     return
   }
 
   toDoList.value[index].isDone = targetList === 'selected'
 
+  draggingEl.value = null
   dragItem.value = null
 }
 
 function isFilterOpen() {
-  open.value = !open.value
+  if(!open.value) {
+    open.value = true
+  }
 }
 
 let todoId = toDoList.value.length + 1
@@ -327,29 +331,6 @@ h2 {
   color: rgba(218, 157, 153, 0.51);
 }
 
-.todo-filter-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background-color: transparent;
-  border: none;
-  border-radius: 50%;
-  color: #da9d99;
-  cursor: pointer;
-  margin-bottom: 15px;
-}
-
-.todo-filter-button:hover {
-  background-color: rgba(218, 157, 153, 0.11);
-  transition: all 0.2s;
-}
-
-.todo-filter-icon {
-  width: 18px;
-}
-
 .todo-filter .ant-select-selector .ant-select-selection-item {
   font-weight: 700 !important;
 }
@@ -443,19 +424,22 @@ h2 {
 }
 
 .todo-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  margin-left: 400px;
+  margin-left: 500px;
   padding: 40px;
 }
 
-.todo-list-progress,
-.todo-list-done {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.todo-list-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  justify-content: center;
   gap: 20px;
+}
+
+.todo-list-items.highlight {
+  background-color: rgba(218, 157, 153, 0.11);
 }
 
 .todo-button-group {
@@ -498,10 +482,8 @@ h2 {
   padding: 0;
 }
 
-.todo-list-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.todo-cards {
+  display: contents;
 }
 
 a,

@@ -1,5 +1,7 @@
 <template>
   <div class="todo-cards"
+       @dragenter="emit('drag-enter', props.type)"
+       @dragleave="emit('drag-leave', props.type)"
        @dragover.prevent @drop="(event) => { event.stopPropagation();
        emit('drop-list', props.type) }"
   >
@@ -44,6 +46,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'drag-start', item: Todo, type: 'available' | 'selected'): void
   (e: 'drop-list', type: 'available' | 'selected'): void
+  (e: 'drag-enter', type: 'available' | 'selected'): void
+  (e: 'drag-leave', type: 'available' | 'selected'): void
   (e: 'remove', id: number): void
   (e: 'change', id: number, isDone: boolean) : void
 }>()
