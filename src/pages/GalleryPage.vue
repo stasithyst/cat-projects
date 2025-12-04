@@ -14,6 +14,7 @@
     <div v-if="visible" class="overlay" @click="close">
       <div class="modal-content" @click.stop>
         <img
+          v-if="currentImage !== null"
           :src="images[currentImage].src"
           :key="images[currentImage].id"
           alt="image"
