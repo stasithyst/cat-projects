@@ -260,7 +260,20 @@ watch(
 onMounted(() => {
   const saved = localStorage.getItem('toDoList')
   if (saved) {
-    toDoList.value = JSON.parse(saved)
+    try {
+      const parsed = JSON.parse(saved)
+
+      parsed.forEach((item) => {
+        if (item.image && item.image.startsWith('/images/')) {
+          item.image = `${import.meta.env.BASE_URL}${item.image.slice(1)}`
+        }
+      })
+
+      toDoList.value = parsed
+    } catch (e) {
+      console.error(e)
+      localStorage.clear()
+    }
   }
 })
 </script>
