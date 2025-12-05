@@ -54,7 +54,7 @@ function backToHome() {
 
 .image-block {
   width: 300px;
-  border: 3px solid #DA9D99;
+  border: 3px solid #da9d99;
   border-radius: 6px;
 }
 

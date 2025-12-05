@@ -86,12 +86,11 @@
   </button>
 </template>
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import type { UnwrapRef } from 'vue'
 import type { Todo } from '../types/Todo'
 import FormInput from '../components/FormInput.vue'
 import TodoCards from '../components/TodoCards.vue'
-import { watch } from 'vue'
 
 const toDoList = ref<Todo[]>([
   {
@@ -249,20 +248,27 @@ function deleteCard(id: number) {
   toDoList.value = toDoList.value.filter((item) => item.id !== id)
 }
 
-watch(
-  toDoList,
-  (val) => {
-    localStorage.setItem('toDoList', JSON.stringify(val))
-  },
-  { deep: true },
-)
-
-onMounted(() => {
-  const saved = localStorage.getItem('toDoList')
-  if (saved) {
-    toDoList.value = JSON.parse(saved)
-  }
-})
+// watch(
+//   toDoList,
+//   (val) => {
+//     localStorage.setItem('toDoList', JSON.stringify(val))
+//   },
+//   { deep: true },
+// )
+//
+// onMounted(() => {
+//   const saved = localStorage.getItem('toDoList')
+//   if (saved) {
+//     const parsed = JSON.parse(saved)
+//     // Исправляем пути у всех карточек из localStorage
+//     parsed.forEach((item: Todo) => {
+//       if (item.image && !item.image.startsWith(import.meta.env.BASE_URL)) {
+//         item.image = import.meta.env.BASE_URL + item.image.replace(/^\//, 'images/')
+//       }
+//     })
+//     toDoList.value = parsed
+//   }
+// })
 </script>
 
 <style lang="css">
